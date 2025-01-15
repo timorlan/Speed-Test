@@ -1,3 +1,4 @@
+# server.py
 import socket
 import struct
 import threading
@@ -8,6 +9,20 @@ import colorama
 from colorama import Fore, Style
 
 colorama.init()
+def print_banner():
+    banner = f"""
+    {Fore.CYAN}
+    ╔══════════════════════════════════════════════════════════╗
+    ║  ____        _       ____             _                  ║
+    ║ | __ ) _   _| |_ ___|  _ \ _   _ ___| |_ ___ _ __ ___  ║
+    ║ |  _ \| | | | __/ _ \ |_) | | | / __| __/ _ \ '__/ __| ║
+    ║ | |_) | |_| | ||  __/  _ <| |_| \__ \ ||  __/ |  \__ \ ║
+    ║ |____/ \__, |\__\___|_| \_\__,_|___/\__\___|_|  |___/ ║
+    ║        |___/                                            ║
+    ║                Speed Test Server v1.0                   ║
+    ╚══════════════════════════════════════════════════════════╝
+    {Style.RESET_ALL}"""
+    print(banner)
 
 class SpeedTestServer:
     TEAM_NAME = "ByteBusters"
@@ -26,6 +41,7 @@ class SpeedTestServer:
         
         self.ip_address = self._get_ip_address()
         print(f"{Fore.CYAN}Team {self.TEAM_NAME} - Server started, listening on IP address {self.ip_address}{Style.RESET_ALL}")    
+    
     def _get_available_port(self, protocol: str) -> int:
         sock = socket.socket(
             socket.AF_INET, 
@@ -115,15 +131,18 @@ class SpeedTestServer:
                 for i in range(0, total_segments, burst_size):
                     for j in range(i, min(i + burst_size, total_segments)):
                         send_socket.sendto(segments[j], addr)
-                    time.sleep(0.001)  # Small delay between bursts to prevent network congestion
                     
             finally:
                 send_socket.close()
                 
         except Exception as e:
             print(f"{Fore.RED}Error handling UDP client: {str(e)}{Style.RESET_ALL}")
+                
+        except Exception as e:
+            print(f"{Fore.RED}Error handling UDP client: {str(e)}{Style.RESET_ALL}")
     
     def run(self):
+        print_banner()
         broadcast_thread = threading.Thread(target=self.broadcast_offers, daemon=True)
         broadcast_thread.start()
         
